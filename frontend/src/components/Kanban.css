@@ -1,0 +1,131 @@
+.kanban-container {
+  width: 100%;
+  height: calc(100vh - 200px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 1rem;
+}
+
+.kanban-board {
+  display: flex;
+  gap: 1.5rem;
+  height: 100%;
+  min-width: min-content;
+}
+
+.kanban-column {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  max-height: 100%;
+}
+
+.kanban-column-header {
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.kanban-column-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.kanban-count {
+  background: hsl(var(--bg-surface-hover));
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: hsl(var(--text-muted));
+}
+
+.kanban-droppable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 150px;
+}
+
+.kanban-task-card {
+  background: hsl(var(--bg-surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  cursor: grab;
+  position: relative;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.kanban-task-card:hover {
+  border-color: hsl(var(--border-light));
+  box-shadow: var(--shadow-sm);
+}
+
+.kanban-task-card:active {
+  cursor: grabbing;
+}
+
+.kanban-task-card.overlay {
+  box-shadow: var(--shadow-lg);
+  transform: scale(1.02) rotate(2deg);
+  border-color: hsl(var(--primary));
+  z-index: 999;
+}
+
+.task-labels {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.task-title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  word-wrap: break-word;
+}
+
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.task-icons {
+  display: flex;
+  gap: 0.75rem;
+  color: hsl(var(--text-muted));
+}
+
+.task-icon-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.task-assignee {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: hsl(var(--bg-surface-hover));
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
