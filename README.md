@@ -1,90 +1,153 @@
 # Ethara.AI Team Task Manager 🚀
 
-A production-ready full-stack MERN application for managing team projects, tasks, and members with role-based access control. Built for the Ethara.AI assignment.
+![Ethara.AI Team Task Manager Banner](./assets/banner.png)
+
+A production-ready full-stack MERN (MongoDB, Express, React, Node.js) application designed for high-performance team collaboration. This project features robust role-based access control (RBAC), real-time task tracking with a Kanban board, and a stunning glassmorphism-inspired UI.
+
+---
 
 ## 🌟 Key Features
 
-- **Authentication & Security**: Secure JWT-based login, registration, and refresh token rotation.
-- **Role-Based Access Control (RBAC)**: 
-  - **Admins** have full access to create projects, manage members, and oversee all tasks.
-  - **Members** can only view projects they are assigned to and update the status of their own tasks.
-- **Dynamic Kanban Board**: Drag-and-drop task management powered by `@dnd-kit`.
-- **Stunning UI/UX**: Dark-mode first design, glassmorphism aesthetics, responsive layouts, and micro-animations built with rich Vanilla CSS.
-- **Dashboard Analytics**: Real-time statistics, completion rates, and an overdue task alert system.
+### 🔐 Authentication & Security
+- **JWT-Based Auth**: Secure login and registration with Access & Refresh token rotation.
+- **Secure Storage**: HTTP-only cookies for refresh tokens to prevent XSS.
+- **Rate Limiting**: Protection against brute-force attacks on all API endpoints.
+- **Helmet**: Essential security headers for production safety.
+
+### 🛡️ Role-Based Access Control (RBAC)
+- **Admin**: Full control. Can create projects, invite members, assign tasks, and delete records.
+- **Member**: Focused access. Can only view assigned projects and update the status of tasks assigned to them.
+- **Granular Permissions**: Custom middleware ensures users can only access data they are authorized to see.
+
+### 📊 Project & Task Management
+- **Dynamic Kanban Board**: Drag-and-drop tasks across statuses (To Do, In Progress, Review, Done) powered by `@dnd-kit`.
+- **Project Lifecycle**: Assign colors, set deadlines, and track completion progress.
+- **Collaborative Comments**: Discuss tasks directly within the task view.
+
+### 🎨 Premium UI/UX
+- **Aesthetic Design**: Dark-mode first design with glassmorphism, vibrant gradients, and smooth transitions.
+- **Responsive Layout**: Optimized for Desktop, Tablet, and Mobile.
+- **Micro-animations**: Subtle feedback for every user interaction.
+
+---
 
 ## 🛠️ Technology Stack
 
-**Frontend**
-- React 18 (Vite)
-- React Router DOM v6
-- Context API for State Management
-- Axios (with interceptors for silent token refresh)
-- `@dnd-kit` for drag-and-drop
-- Vanilla CSS (Custom Design System, no Tailwind)
+### Frontend
+- **Framework**: React 18 (Vite)
+- **State Management**: React Context API
+- **Routing**: React Router DOM v6
+- **Styling**: Vanilla CSS (Custom Design System)
+- **Interactions**: `@dnd-kit` (Drag & Drop), `lucide-react` (Icons)
+- **Networking**: Axios (with interceptors for token refresh)
 
-**Backend**
-- Node.js & Express.js
-- MongoDB & Mongoose ODM
-- JWT (Access & Refresh Tokens stored securely)
-- Bcrypt.js for password hashing
-- Express Rate Limit & Helmet for security
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB (Mongoose ODM)
+- **Security**: JWT, Bcrypt.js, Helmet, Express-Rate-Limit, CORS
+- **Logging**: Morgan
 
-**Deployment**
-- Configured for Railway (`railway.json` included)
-- Multi-stage Docker builds for both Frontend and Backend.
+---
 
-## 🚀 Running Locally
+## 📂 Project Structure
+
+```text
+├── assets/             # Project images and banners
+├── backend/            # Express API
+│   ├── src/
+│   │   ├── config/     # Database and env configs
+│   │   ├── controllers/# Business logic
+│   │   ├── middleware/ # Auth & RBAC logic
+│   │   ├── models/     # Mongoose Schemas
+│   │   └── routes/     # API Endpoints
+│   └── server.js       # Entry point
+├── frontend/           # React App
+│   ├── src/
+│   │   ├── components/ # Reusable UI components
+│   │   ├── context/    # Global state (Auth/Projects)
+│   │   ├── pages/      # View components
+│   │   └── services/   # API communication (Axios)
+│   └── index.css       # Core design system
+└── railway.json        # Deployment configuration
+```
+
+---
+
+## 🚦 API Documentation
+
+### Auth Endpoints
+- `POST /api/auth/register` - Create a new account.
+- `POST /api/auth/login` - Login and receive tokens.
+- `POST /api/auth/refresh` - Rotate access token.
+- `GET /api/auth/me` - Get current user profile.
+
+### Project Endpoints
+- `GET /api/projects` - List all projects (filtered by role).
+- `POST /api/projects` - Create new project (**Admin only**).
+- `GET /api/projects/:id` - Get project details.
+- `POST /api/projects/:id/members` - Add member to project (**Admin only**).
+
+### Task Endpoints
+- `GET /api/tasks` - Get all tasks.
+- `POST /api/tasks` - Create new task (**Admin only**).
+- `PATCH /api/tasks/:id/status` - Update task status (**Assigned Member/Admin**).
+- `POST /api/tasks/:id/comments` - Add comment to task.
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js (v18+)
 - MongoDB Atlas account or local MongoDB instance
 
 ### 1. Clone the repository
-\`\`\`bash
+```bash
 git clone https://github.com/yourusername/ethara-task-manager.git
 cd ethara-task-manager
-\`\`\`
+```
 
 ### 2. Backend Setup
-\`\`\`bash
+```bash
 cd backend
 npm install
-
-# Create a .env file and configure your MongoDB URI and JWT secrets
 cp .env.example .env
-
-# Start the dev server
+# Fill in your MONGODB_URI and JWT secrets in .env
 npm run dev
-\`\`\`
+```
 
 ### 3. Frontend Setup
-\`\`\`bash
+```bash
 cd frontend
 npm install
-
-# Start the dev server
 npm run dev
-\`\`\`
+```
+
+---
 
 ## 🌐 Deployment (Railway)
 
-This repository is strictly configured for 1-click deployment on Railway using Docker.
+This repository is optimized for deployment on **Railway**.
 
-1. Connect your GitHub repository to [Railway.app](https://railway.app/).
-2. Railway will automatically detect the `railway.json` and deploy both the `backend` and `frontend` folders as separate services using their respective `Dockerfile`s.
-3. Provision a **MongoDB** plugin within your Railway project.
-4. Set the necessary Environment Variables in the backend service (`MONGODB_URI`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `FRONTEND_URL`).
-5. Set the `VITE_API_URL` environment variable in the frontend service to point to your deployed backend.
-
-## 🎥 Demo Video Guide (2-5 mins script outline)
-
-1. **Introduction**: Show the stunning Landing Page.
-2. **Auth & RBAC Setup**: Register a new user (first user becomes Admin automatically). Show the Dashboard.
-3. **Project Management**: Create a new Project, give it a color and deadline.
-4. **Member Management**: Register a second user (becomes Member). Log back in as Admin and add them to the Project.
-5. **Task Management (Kanban)**: Create tasks and assign them. Show the drag-and-drop Kanban functionality.
-6. **Role Limitations**: Log in as the Member, show that they cannot create projects, but can move their assigned tasks across the Kanban board.
-7. **Dashboard**: Show how the dashboard statistics and overdue alerts update dynamically.
+1. Connect your GitHub repository to [Railway](https://railway.app/).
+2. Railway will detect the `railway.json` and deploy both services.
+3. **Environment Variables Needed**:
+   - `MONGODB_URI`: Your MongoDB connection string.
+   - `JWT_SECRET`: Random string for access tokens.
+   - `JWT_REFRESH_SECRET`: Random string for refresh tokens.
+   - `FRONTEND_URL`: URL of your deployed frontend.
+   - `VITE_API_URL`: (Frontend) URL of your deployed backend.
 
 ---
-*Developed by Anuj Solania for Ethara.AI*
+
+## 🎥 Demo Walkthrough
+
+1. **Dashboard**: View real-time project statistics and overdue task alerts.
+2. **Project Creation**: Create a project and assign it a unique color identity.
+3. **Collaboration**: Add members to projects and assign them specific tasks.
+4. **Kanban Flow**: Move tasks across the board as work progresses.
+5. **RBAC Test**: Log in as a 'Member' to see the restricted, focused view.
+
+---
+*Developed with ❤️ by Anuj Solania for Ethara.AI*
