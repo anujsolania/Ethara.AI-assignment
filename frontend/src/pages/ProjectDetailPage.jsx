@@ -12,6 +12,8 @@ const ProjectDetailPage = () => {
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [taskFormData, setTaskFormData] = useState({ title: '', description: '', priority: 'medium', dueDate: '', assignee: '' });
 
   const fetchProjectData = async () => {
     try {
@@ -28,6 +30,19 @@ const ProjectDetailPage = () => {
   useEffect(() => {
     fetchProjectData();
   }, [id]);
+
+  const handleCreateTask = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/tasks', { ...taskFormData, project: project._id });
+      toast.success('Task created successfully');
+      setShowTaskModal(false);
+      setTaskFormData({ title: '', description: '', priority: 'medium', dueDate: '', assignee: '' });
+      fetchProjectData();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to create task');
+    }
+  };
 
   if (loading) {
     return (
@@ -76,7 +91,7 @@ const ProjectDetailPage = () => {
           {user?.role === 'admin' && (
             <div className="flex gap-2">
               <button className="btn btn-secondary"><Settings size={18} /> Settings</button>
-              <button className="btn btn-primary"><Plus size={18} /> Add Task</button>
+              <button className="btn btn-primary" onClick={() => setShowTaskModal(true)}><Plus size={18} /> Add Task</button>
             </div>
           )}
         </div>
@@ -90,6 +105,81 @@ const ProjectDetailPage = () => {
           onTaskClick={(task) => console.log('Clicked task', task)}
         />
       </div>
+
+      {/* Create Task Modal */}
+      {showTaskModal && (
+        <div className="modal-overlay">
+          <div className="modal-content glass-panel animate-fade-in">
+            <div className="modal-header">
+              <h3>Create New Task</h3>
+              <button className="btn-icon" onClick={() => setShowTaskModal(false)}>×</button>
+            </div>
+            <form onSubmit={handleCreateTask}>
+              <div className="form-group">
+                <label className="form-label">Task Title</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  value={taskFormData.title}
+                  onChange={e => setTaskFormData({...taskFormData, title: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea 
+                  className="form-input" 
+                  rows="3"
+                  value={taskFormData.description}
+                  onChange={e => setTaskFormData({...taskFormData, description: e.target.value})}
+                ></textarea>
+              </div>
+              <div className="flex gap-4">
+                <div className="form-group flex-1">
+                  <label className="form-label">Priority</label>
+                  <select 
+                    className="form-input"
+                    value={taskFormData.priority}
+                    onChange={e => setTaskFormData({...taskFormData, priority: e.target.value})}
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+                <div className="form-group flex-1">
+                  <label className="form-label">Assign To</label>
+                  <select 
+                    className="form-input"
+                    value={taskFormData.assignee}
+                    onChange={e => setTaskFormData({...taskFormData, assignee: e.target.value})}
+                  >
+                    <option value="">Unassigned</option>
+                    {project.members.map(member => (
+                      <option key={member.user._id} value={member.user._id}>
+                        {member.user.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="form-group mt-4">
+                <label className="form-label">Due Date</label>
+                <input 
+                  type="date" 
+                  className="form-input" 
+                  value={taskFormData.dueDate}
+                  onChange={e => setTaskFormData({...taskFormData, dueDate: e.target.value})}
+                />
+              </div>
+              <div className="modal-footer mt-6 flex justify-end gap-2">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowTaskModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary">Create Task</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

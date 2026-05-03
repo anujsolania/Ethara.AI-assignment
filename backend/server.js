@@ -27,7 +27,7 @@ app.use(helmet({ crossOriginResourcePolicy: false }));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
+  max: 1000, // Increased for dev
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 app.use('/api/', limiter);
@@ -35,7 +35,7 @@ app.use('/api/', limiter);
 // Auth rate limit (stricter)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 1000, // Increased for dev
   message: { success: false, message: 'Too many auth attempts, please try again later.' },
 });
 

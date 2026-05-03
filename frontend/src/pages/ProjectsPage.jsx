@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MoreVertical, Calendar, CheckSquare } from 'lucide-react';
+import { Plus, MoreVertical, Calendar, CheckSquare, Layers } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import './Projects.css';
