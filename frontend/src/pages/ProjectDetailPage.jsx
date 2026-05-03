@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Settings, Users } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import KanbanBoard from '../components/KanbanBoard';
+import TaskModal from '../components/TaskModal';
 import toast from 'react-hot-toast';
 
 const ProjectDetailPage = () => {
@@ -15,6 +16,7 @@ const ProjectDetailPage = () => {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [taskFormData, setTaskFormData] = useState({ title: '', description: '', priority: 'medium', dueDate: '', assignee: '' });
   const [allUsers, setAllUsers] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const fetchProjectData = async () => {
     try {
@@ -113,9 +115,20 @@ const ProjectDetailPage = () => {
           projectId={project._id} 
           tasks={tasks} 
           onTaskUpdate={fetchProjectData}
-          onTaskClick={(task) => console.log('Clicked task', task)}
+          onTaskClick={(task) => setSelectedTask(task)}
         />
       </div>
+
+      {/* Task Detail/Edit Modal */}
+      {selectedTask && (
+        <TaskModal 
+          task={selectedTask} 
+          onClose={() => setSelectedTask(null)} 
+          onUpdate={fetchProjectData}
+          currentUser={user}
+          allUsers={allUsers}
+        />
+      )}
 
       {/* Create Task Modal */}
       {showTaskModal && (

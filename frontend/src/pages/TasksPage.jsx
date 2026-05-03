@@ -3,6 +3,7 @@ import { Filter, CheckSquare, Clock, Search, MoreVertical } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import './Tasks.css';
+import TaskModal from '../components/TaskModal';
 import toast from 'react-hot-toast';
 
 const TasksPage = () => {
@@ -11,6 +12,8 @@ const TasksPage = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, my, overdue
   const [search, setSearch] = useState('');
+  const [allUsers, setAllUsers] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const fetchTasks = async () => {
     try {
@@ -29,8 +32,18 @@ const TasksPage = () => {
     }
   };
 
+  const fetchAllUsers = async () => {
+    try {
+      const { data } = await api.get('/auth/users');
+      setAllUsers(data.data.users);
+    } catch (error) {
+      console.error('Failed to fetch users', error);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
+    fetchAllUsers();
   }, [filter]);
 
   // Debounced search
@@ -109,7 +122,7 @@ const TasksPage = () => {
             </thead>
             <tbody>
               {tasks.map(task => (
-                <tr key={task._id} className="task-row">
+                <tr key={task._id} className="task-row" onClick={() => setSelectedTask(task)} style={{ cursor: 'pointer' }}>
                   <td className="task-cell-primary">
                     <div className="task-title-cell">
                       <span className="font-medium">{task.title}</span>
@@ -143,6 +156,16 @@ const TasksPage = () => {
             </tbody>
           </table>
         </div>
+      )}
+
+      {selectedTask && (
+        <TaskModal 
+          task={selectedTask} 
+          onClose={() => setSelectedTask(null)} 
+          onUpdate={fetchTasks}
+          currentUser={user}
+          allUsers={allUsers}
+        />
       )}
     </div>
   );
