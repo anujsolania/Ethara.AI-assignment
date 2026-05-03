@@ -56,8 +56,13 @@ const DashboardPage = () => {
     <div className="page-container">
       <div className="dashboard-header animate-fade-in">
         <div>
+        <div className="flex items-center gap-3">
           <h2>Welcome back, {user?.name.split(' ')[0]} 👋</h2>
-          <p className="text-muted">Here's what's happening with your projects today.</p>
+          <span className={`badge ${user?.role === 'admin' ? 'badge-primary' : 'badge-info'}`} style={{ textTransform: 'capitalize' }}>
+            {user?.role}
+          </span>
+        </div>
+        <p className="text-muted">Here's what's happening with your projects today.</p>
         </div>
       </div>
 

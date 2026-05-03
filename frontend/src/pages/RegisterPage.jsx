@@ -8,6 +8,7 @@ const RegisterPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('member');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const success = await register(name, email, password);
+    const success = await register(name, email, password, role);
     setIsLoading(false);
     if (success) {
       navigate('/dashboard');
@@ -81,6 +82,19 @@ const RegisterPage = () => {
                 minLength={6}
               />
             </div>
+          </div>
+
+          <div className="form-group mb-6">
+            <label className="form-label">Account Type</label>
+            <select 
+              className="form-input" 
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="member">Member (Regular User)</option>
+              <option value="admin">Admin (Manager)</option>
+            </select>
           </div>
 
           <button type="submit" className="btn btn-primary w-full btn-lg" disabled={isLoading}>
