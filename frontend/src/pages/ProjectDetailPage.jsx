@@ -91,9 +91,9 @@ const ProjectDetailPage = () => {
         
         <div className="flex items-center gap-4">
           <div className="project-members flex items-center">
-            {project.members.slice(0, 4).map((member, i) => (
+            {project.members.filter(m => m.user).slice(0, 4).map((member, i) => (
               <div key={member.user._id} className="member-avatar" style={{ zIndex: 4 - i }} title={`${member.user.name} (${member.role})`}>
-                {member.user.name.charAt(0).toUpperCase()}
+                {member.user.name?.charAt(0).toUpperCase()}
               </div>
             ))}
             <button className="btn-icon" style={{ marginLeft: '0.5rem' }}>

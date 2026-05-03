@@ -50,9 +50,9 @@ const ProjectCard = ({ project }) => {
         </div>
         
         <div className="project-members">
-          {project.members.slice(0, 3).map((member, i) => (
+          {project.members.filter(m => m.user).slice(0, 3).map((member, i) => (
             <div key={member.user._id} className="member-avatar" style={{ zIndex: 3 - i }}>
-              {member.user.name.charAt(0).toUpperCase()}
+              {member.user.name?.charAt(0).toUpperCase()}
             </div>
           ))}
           {project.members.length > 3 && (
