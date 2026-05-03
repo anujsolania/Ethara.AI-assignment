@@ -48,6 +48,24 @@ const TaskModal = ({ task, onClose, onUpdate, currentUser, allUsers }) => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      await api.delete(`/tasks/${task._id}`);
+      toast.success('Task deleted successfully');
+      onUpdate();
+      onClose();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete task');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content glass-panel animate-fade-in" style={{ maxWidth: '600px' }}>
@@ -153,6 +171,16 @@ const TaskModal = ({ task, onClose, onUpdate, currentUser, allUsers }) => {
               {task.createdBy && <div className="flex items-center gap-1"><User size={12} /> By: {task.createdBy.name}</div>}
             </div>
             <div className="flex gap-2">
+              {isAdmin && (
+                <button 
+                  type="button" 
+                  className="btn btn-danger" 
+                  onClick={handleDelete}
+                  disabled={loading}
+                >
+                  Delete Task
+                </button>
+              )}
               <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
               {canEditEverything && (
                 <button type="submit" className="btn btn-primary" disabled={loading}>
