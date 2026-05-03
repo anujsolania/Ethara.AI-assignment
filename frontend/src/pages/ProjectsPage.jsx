@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, MoreVertical, Calendar, CheckSquare, Layers } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Plus, MoreVertical, Calendar, CheckSquare, Layers, Trash2 } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import './Projects.css';
@@ -11,13 +11,59 @@ const ProjectCard = ({ project }) => {
     ? Math.round((project.completedCount / project.taskCount) * 100) 
     : 0;
 
+  const [showMenu, setShowMenu] = useState(false);
+  const { user } = useAuth();
+
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm(`Are you sure you want to delete "${project.name}"? All associated tasks will be permanently removed.`)) return;
+    
+    try {
+      await api.delete(`/projects/${project._id}`);
+      toast.success('Project deleted successfully');
+      window.location.reload();
+    } catch (error) {
+      toast.error('Failed to delete project');
+    }
+  };
+
   return (
     <Link to={`/projects/${project._id}`} className="project-card glass-panel animate-fade-in">
       <div className="project-card-header">
         <div className="project-color" style={{ backgroundColor: project.color }}></div>
-        <button className="btn-icon" onClick={(e) => e.preventDefault()}>
-          <MoreVertical size={18} />
-        </button>
+        <div className="relative" style={{ position: 'relative' }}>
+          <button 
+            className="btn-icon" 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowMenu(!showMenu);
+            }}
+          >
+            <MoreVertical size={18} />
+          </button>
+          
+          {showMenu && user?.role === 'admin' && (
+            <div className="dropdown-menu glass-panel animate-fade-in" style={{ 
+              position: 'absolute', 
+              right: 0, 
+              top: '100%', 
+              zIndex: 100, 
+              minWidth: '150px', 
+              padding: '0.5rem',
+              marginTop: '0.5rem',
+              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)'
+            }}>
+              <button 
+                className="dropdown-item text-error flex items-center gap-2 w-full text-left p-2 hover:bg-white/10 rounded transition-colors text-sm"
+                onClick={handleDelete}
+              >
+                <Trash2 size={14} /> Delete Project
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       
       <div className="project-card-body">
