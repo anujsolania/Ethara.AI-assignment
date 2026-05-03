@@ -1,7 +1,5 @@
 # Ethara.AI Team Task Manager 🚀
 
-![Ethara.AI Team Task Manager Banner](./assets/banner.png)
-
 A production-ready full-stack MERN (MongoDB, Express, React, Node.js) application designed for high-performance team collaboration. This project features robust role-based access control (RBAC), real-time task tracking with a Kanban board, and a stunning glassmorphism-inspired UI.
 
 ---
