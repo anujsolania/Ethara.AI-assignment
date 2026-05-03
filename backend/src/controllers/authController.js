@@ -149,3 +149,12 @@ exports.updateMe = async (req, res, next) => {
     next(err);
   }
 };
+// GET /api/auth/users
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find().select('name email avatar role');
+    res.json({ success: true, data: { users } });
+  } catch (err) {
+    next(err);
+  }
+};

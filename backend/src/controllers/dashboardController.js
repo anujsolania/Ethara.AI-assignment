@@ -11,9 +11,11 @@ exports.getStats = async (req, res, next) => {
 
     if (req.user.role !== 'admin') {
       const myProjects = await Project.find({ 'members.user': req.user.id }).select('_id');
-      const projectIds = myProjects.map((p) => p._id);
+      const taskProjects = await Task.find({ assignee: req.user.id }).distinct('project');
+      const projectIds = [...new Set([...myProjects.map((p) => p._id.toString()), ...taskProjects.map((id) => id.toString())])];
+      
       projectFilter = { _id: { $in: projectIds } };
-      taskFilter = { project: { $in: projectIds } };
+      taskFilter = { $or: [{ project: { $in: projectIds } }, { assignee: req.user.id }] };
     }
 
     const [
@@ -67,7 +69,8 @@ exports.getOverdueTasks = async (req, res, next) => {
 
     if (req.user.role !== 'admin') {
       const myProjects = await Project.find({ 'members.user': req.user.id }).select('_id');
-      filter.project = { $in: myProjects.map((p) => p._id) };
+      const projectIds = myProjects.map((p) => p._id);
+      filter.$or = [{ project: { $in: projectIds } }, { assignee: req.user.id }];
     }
 
     const tasks = await Task.find(filter)
@@ -88,7 +91,8 @@ exports.getRecentTasks = async (req, res, next) => {
     let filter = {};
     if (req.user.role !== 'admin') {
       const myProjects = await Project.find({ 'members.user': req.user.id }).select('_id');
-      filter.project = { $in: myProjects.map((p) => p._id) };
+      const projectIds = myProjects.map((p) => p._id);
+      filter.$or = [{ project: { $in: projectIds } }, { assignee: req.user.id }];
     }
 
     const tasks = await Task.find(filter)

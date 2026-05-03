@@ -9,7 +9,10 @@ exports.getProjects = async (req, res, next) => {
     if (req.user.role === 'admin') {
       query = Project.find();
     } else {
-      query = Project.find({ 'members.user': req.user.id });
+      const taskProjects = await Task.find({ assignee: req.user.id }).distinct('project');
+      query = Project.find({
+        $or: [{ 'members.user': req.user.id }, { _id: { $in: taskProjects } }],
+      });
     }
 
     const projects = await query

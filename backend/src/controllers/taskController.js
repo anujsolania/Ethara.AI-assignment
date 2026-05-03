@@ -8,10 +8,11 @@ exports.getTasks = async (req, res, next) => {
 
     const filter = {};
 
-    // Members see only tasks in their projects
+    // Members see tasks in their projects OR tasks assigned to them
     if (req.user.role !== 'admin') {
-      const projects = await Project.find({ 'members.user': req.user.id }).select('_id');
-      filter.project = { $in: projects.map((p) => p._id) };
+      const myProjects = await Project.find({ 'members.user': req.user.id }).select('_id');
+      const projectIds = myProjects.map((p) => p._id);
+      filter.$or = [{ project: { $in: projectIds } }, { assignee: req.user.id }];
     }
 
     if (project) filter.project = project;
@@ -73,6 +74,15 @@ exports.createTask = async (req, res, next) => {
       tags: tags || [],
     });
 
+    // Auto-add assignee to project members if not already there
+    if (assignee) {
+      const alreadyMember = proj.members.some((m) => m.user.toString() === assignee.toString());
+      if (!alreadyMember) {
+        proj.members.push({ user: assignee, role: 'member' });
+        await proj.save();
+      }
+    }
+
     await task.populate('assignee', 'name email avatar');
     await task.populate('createdBy', 'name email avatar');
     await task.populate('project', 'name color');
@@ -126,6 +136,18 @@ exports.updateTask = async (req, res, next) => {
       if (priority !== undefined) task.priority = priority;
       if (dueDate !== undefined) task.dueDate = dueDate;
       if (tags !== undefined) task.tags = tags;
+
+      // Auto-add new assignee to project members if not already there
+      if (assignee) {
+        const proj = await Project.findById(task.project);
+        if (proj) {
+          const alreadyMember = proj.members.some((m) => m.user.toString() === assignee.toString());
+          if (!alreadyMember) {
+            proj.members.push({ user: assignee, role: 'member' });
+            await proj.save();
+          }
+        }
+      }
     }
 
     await task.save();

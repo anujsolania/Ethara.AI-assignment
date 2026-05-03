@@ -14,6 +14,7 @@ const ProjectDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [taskFormData, setTaskFormData] = useState({ title: '', description: '', priority: 'medium', dueDate: '', assignee: '' });
+  const [allUsers, setAllUsers] = useState([]);
 
   const fetchProjectData = async () => {
     try {
@@ -27,8 +28,18 @@ const ProjectDetailPage = () => {
     }
   };
 
+  const fetchAllUsers = async () => {
+    try {
+      const { data } = await api.get('/auth/users');
+      setAllUsers(data.data.users);
+    } catch (error) {
+      console.error('Failed to fetch users', error);
+    }
+  };
+
   useEffect(() => {
     fetchProjectData();
+    fetchAllUsers();
   }, [id]);
 
   const handleCreateTask = async (e) => {
@@ -155,9 +166,9 @@ const ProjectDetailPage = () => {
                     onChange={e => setTaskFormData({...taskFormData, assignee: e.target.value})}
                   >
                     <option value="">Unassigned</option>
-                    {project.members.map(member => (
-                      <option key={member.user._id} value={member.user._id}>
-                        {member.user.name}
+                    {allUsers.map(u => (
+                      <option key={u._id} value={u._id}>
+                        {u.name}
                       </option>
                     ))}
                   </select>
